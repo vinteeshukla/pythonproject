@@ -1,0 +1,688 @@
+{% load static%}
+<!DOCTYPE html>
+<html>
+<head>
+<title>Checking page</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+ 
+  <link rel="stylesheet" href="{% static '/css/common.css'%}">
+  
+</head>
+<style type="text/css">
+ 
+        .column {
+  float: left;
+  padding: 10px;
+  height: 250px; /* Should be removed. Only for demonstration */
+  background-color:#2f96b400;
+  border: 2px solid black; 
+}
+
+.left,.middle{
+  width: 160px;
+  margin-left: 30px;
+  border-radius: 5px;
+  margin-top: 30px;
+}
+
+ .right{
+    width: 25%;
+  margin-left: 20px;
+  border-radius: 5px;
+  margin-top: 8px;
+
+ }
+
+#create{
+  padding: 16px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+   background-color: white;
+  color: black;
+  border: 2px solid #e7e7e7;  
+}
+
+.search-container{
+    float: right;
+  padding: 7px 45px;
+  margin-top: 15px;
+  margin-right: 170px;
+  background: #ddd;
+  font-size: 17px;
+  border: none;
+}
+
+        ::-webkit-scrollbar {
+  width: 7px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888; 
+}
+.button{
+  padding: 10px 15px;
+  top: 0px;
+  left: 0px;
+  margin: 17px 0 0 8px;
+  cursor: pointer;
+  background-color: white;
+  outline: none;
+  border: none;
+  font-family: "Lato","Helvetica Neue",Arial,Helvetica,sans-serif;
+  font-weight: bold;
+  font-style: normal;
+  text-align: center;
+  border-radius: 0.28571429rem;
+}
+.button:hover{
+  background:#a4a9fd;
+}
+.dialog{
+  border:5px solid #666;
+  padding:10px;
+  background:#C0C0C0;
+  position: fixed;
+  display:none;
+  top: 50%;
+  left: 50%;
+  width: 400px;
+  margin-left: -100px;
+  height: 150px;
+  margin-top: -25px;
+  
+}
+.dialog label{
+  display:inline-block;
+  color:#000000;
+}
+input[type=text]{
+  border:1px solid #333;
+  display:inline-block;
+  margin:5px;
+}
+#btnOK{
+  border:1px solid #000;
+  background:#ff9999;
+  margin:5px;
+  
+}
+
+#btnOK:hover{
+  border:1px solid #000;
+  background:#ffacac;
+}
+
+#gambit {
+  padding: 10px 15px;
+  margin: 15px 0 0 34px;
+  cursor: pointer;
+  background-color: #6e8391;
+  font-family: "Lato","Helvetica Neue",Arial,Helvetica,sans-serif;
+  font-weight: bold;
+  font-style: normal;
+  text-align: center;
+ 
+}
+.create_btn{
+  width: 200px;
+    height: 80px;
+    top: 10px;
+    left: 20px;
+    background: #6e8391;
+    position: absolute;
+    border-radius: 20px;
+}
+.round_button{
+  margin-left: 90px;
+  margin-top: 1px;
+  cursor: pointer;
+}
+#cancel{
+  position:relative;
+  left:80%;
+  right:20%;
+  bottom:7%;
+  top:99%;
+  background: #00FF00;
+}
+#save{
+  position:relative;
+  left:80%;
+  right:20%;
+  bottom:7%;
+  top:99%;
+  background: #00FF00;
+}
+.box{
+  position: absolute;
+  background: #FDFEFE;
+  height: 97%;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  /*width: calc(100% - 78px);*/
+  transition: all 0.5s ease;
+  z-index: 2;
+  border-radius: 25px;
+  overflow: auto;  
+}
+   .modalDialog {
+    position: fixed;
+    font-family: Arial, Helvetica, sans-serif;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 99999;
+    opacity:0;
+    -webkit-transition: opacity 400ms ease-in;
+    -moz-transition: opacity 400ms ease-in;
+    transition: opacity 400ms ease-in;
+    pointer-events: none;
+      }
+      .modalDialog:target {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .modalDialog > div {
+        width: 400px;
+        position: relative;
+        margin: 22% auto;
+        padding: 5px 20px 13px 20px;
+        border-radius: 10px;
+        background: -moz-linear-gradient(#2edbe8, #01a6b2);
+        {% comment %} background: -webkit-linear-gradient(#2f96b4fc, #01a6b2); {% endcomment %}
+        background: #2f96b4fc;
+        background: -o-linear-gradient(#2edbe8, #01a6b2);
+      }
+      .close {
+        background: #606061;
+        color: #FFFFFF;
+        line-height: 25px;
+        position: absolute;
+        right: -12px;
+        text-align: center;
+        top: -10px;
+        width: 24px;
+        text-decoration: none;
+        font-weight: bold;
+        -webkit-border-radius: 12px;
+        -moz-border-radius: 12px;
+        border-radius: 12px;
+        -moz-box-shadow: 1px 1px 3px #000;
+        -webkit-box-shadow: 1px 1px 3px #000;
+        box-shadow: 1px 1px 3px #000;
+      }
+      .close:hover {
+        background: #6ed1d8;
+      }
+      .home-section{
+        position: absolute;
+        background: #E4E9F7;
+        top: 8px;
+        left: 105px;
+        right: 8px;
+        bottom: 8px;
+        transition: all 0.5s ease;
+        z-index: 2;
+        border-radius: 25px;
+      }
+      .discussion{
+        display: block;    /* needed to make width and height work */
+        background: white;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position:relative;
+        float:right;
+        
+      }
+      
+      .discussion:after {
+        content: '\2807';
+        font-size: 1.5em; 
+        color: black;
+        margin-left: 15%;
+      }
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        right: 0;
+        background-color: #f9f9f9;
+        min-width: 33px;
+        {% comment %} box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); {% endcomment %}
+        z-index: 1;
+        padding:4px;
+      }
+      
+      .dropdown-content a {
+        color: black;
+        padding: 4px;
+        text-decoration: none;
+        display: block;
+        float:right;
+        
+      }
+      
+.dropdown-content a:hover {background-color: #f1f1f1; font-size: 10px;}
+.discussion:hover .dropdown-content {display: block;}
+.discussion:hover .discussion:after {background-color: #3e8e41;}
+
+
+.modal,
+.modal-box {
+  z-index: 900;
+}
+
+.modal-sandbox {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: transparent;
+}
+
+.modal {
+  display: none; 
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  background: rgb(0,0,0);
+  background: rgba(0,0,0,.8);
+  overflow: auto;
+}
+
+.modal-box {
+  position: relative;
+  width: 70%;
+  max-width: 400px;
+  margin: 100px auto;
+  animation-name: modalbox;
+  animation-duration: .4s;
+  animation-timing-function: cubic-bezier(0,0,.3,1.6);
+}
+
+.modal-header {
+  padding: 20px 40px;
+  background: #546E7A;
+  color: #ffffff;
+}
+
+.modal-body {
+  background: #ECEFF1;
+  padding: 20px 30px;
+}
+
+/* Close Button */
+.close-modal {
+  text-align: right;
+  cursor: pointer;
+}
+
+/* Animation */
+@-webkit-keyframes modalbox {
+  0% {
+    top: -250px; 
+    opacity: 0;
+  }
+  100% {
+    top: 0; 
+    opacity: 1;
+  }
+}
+
+@keyframes modalbox {
+  0% {
+    top: -250px; 
+    opacity: 0;
+  }
+  100% {
+    top: 0; 
+    opacity: 1;
+  }
+}
+
+/* Aditional Styles */
+* {
+  font-family: "Roboto", sans-serif;
+  font-weight: normal;
+}
+
+p {
+  line-height: 1em;
+}
+
+body {
+  background: #B0BEC5;
+}
+
+.modal-trigger, button {
+  top: 50%;
+  left: 50%;
+
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid #ffffff;
+  text-decoration: none;
+}
+
+
+
+button {
+  border: 1px solid #333333;
+  outline: none;
+  color: #333333;
+}
+
+.modal-trigger:hover {
+  padding: 4px;
+}
+</style>
+    <body>
+    <div class="top">
+        <div class="header">
+          <div class="navbar">
+            <a class="active" href="#"><i class="fa fa-fw fa-home"></i></a>
+            <button class="publish" style="font-size:24px" title="Publish Chatbot"><i class="fa fa-rocket"></i></button>
+          </div> 
+        </div>
+    </div>
+    <div class="main">
+      <div class="sidebar">
+        <div class="logo-details">
+          <i class='bx bxl-c-plus-plus icon'></i>
+            <div class="logo_name">Chat Bot App</div>
+            <i class='bx bx-menu' id="btn" ></i>
+        </div>
+        <ul class="nav-list">
+          <li>
+              <i class='bx bx-search' ></i>
+             <input type="text" placeholder="Search...">
+             <span class="tooltip">Search</span>
+          </li>
+          <li>
+            <a href="#">
+              <i class='bx bx-grid-alt'></i>
+              <span class="links_name">Dashboard</span>
+            </a>
+             <span class="tooltip">Dashboard</span>
+          </li>
+          <li>
+           <a href="#">
+             <i class='bx bx-user' ></i>
+             <span class="links_name">User</span>
+           </a>
+           <span class="tooltip">User</span>
+         </li>
+         <li>
+           <a href="#">
+             <i class='bx bx-chat' ></i>
+             <span class="links_name">Messages</span>
+           </a>
+           <span class="tooltip">Messages</span>
+         </li>
+         <li>
+           <a href="#">
+             <i class='bx bx-pie-chart-alt-2' ></i>
+             <span class="links_name">Analytics</span>
+           </a>
+           <span class="tooltip">Analytics</span>
+         </li>
+         <li>
+           <a href="#">
+             <i class='bx bx-heart' ></i>
+             <span class="links_name">Saved</span>
+           </a>
+           <span class="tooltip">Saved</span>
+         </li>
+         <li>
+           <a href="#">
+             <i class='bx bx-cog' ></i>
+             <span class="links_name">Setting</span>
+           </a>
+           <span class="tooltip">Setting</span>
+         </li>
+        </ul>
+      </div>
+          <div class="home-section">
+          <div class="box"><div>
+            <div class="column middle" style="width: 160px;margin-bottom: 8px">
+              <center><h2 value="Create From scratch" >Add ChatBot</h2>
+           
+                <a href="#openModal"><i class="fa fa-plus-circle" id="btn3" style="font-size:48px;color:#2f96b4fc"></i></a><center>
+             
+            </div>  
+          </div>            
+                  
+    
+    <div id="openModal" class="modalDialog" style="display:none;">
+      <div>
+       <a href="" title="Close" class="close">X</a>
+        <h4>Create Chatbot from scratch </h4>
+        <hr>
+        <label id="valueFromMyButton">
+        </label>
+      
+        <center><input type="text" id="name" placeholder="Enter the Chatbot title here" style="height:40px; width:300px;"  autocomplete="off"></center>
+        <br>
+        <br>
+        <hr>
+        <div><center><button class="ui grey button" id="an2">Cancel</button><button class="ui positive button" id="an1">Create</button></center></div>
+      </div>
+      
+    </div>
+    
+    <div id="tablehidden"><section id ="sec_1" click="function(del)">
+     <table style='border: 1px solid black; border-collapse: collapse;'>
+          {% for i in all_user_profile %}
+         
+                    <div class="column middle" id="column_new" style="width: 160px;margin-bottom: 8px" data-value="{{i.scratch_id}}" click="function(i)">
+                        <center><img class="card-img-top" src="{% static "images/image1.png" %}" style="align:center;width: 80%"></center>
+                        <div class="card-body">
+                          <hr><center><h5 class="card-title" id ="next1">{{i.chatbot_title}}</center></h5>
+                         {% comment %} <hr> <p class="card-text" id="w3s">{{i.scratch_id}}</p> {% endcomment %}
+                         {% comment %} <button type="button" class="btn-delete" id="btn-delete" style="height:18px;width:20px;float:right;" value="{{i.scratch_id}}">&#x78</button> {% endcomment %}
+                         <hr><div class="discussion"><div class="dropdown-content">
+                          <a href="#" class="modal-trigger" data-modal="modal-name"><button type="button"><i class="fa fa-edit" style="float:right;height:14px;width:16.5px;" click ="function(e)"></i></button></a>
+                         
+                          <a href="#"><button type="button" class="btn-delete" id="btn-delete" style="height:18px;width:20px;float:right;" value="{{i.scratch_id}}" click="function(e)">&#x78</button></a>
+                          </div></div>
+                        </div>
+    </div>
+                     {% endfor %}  
+                    
+                      <div class="modal" id="modal-name">
+                            <div class="modal-sandbox"></div>
+                            <div class="modal-box">
+                              <div class="modal-header">
+                                <div class="close-modal">&#10006;</div> 
+                                <h1 contenteditable="true"></h1>
+                              </div>
+                              <div class="modal-body">
+                                <p><img class="card-img-top" src="{% static "images/image1.png" %}" style="align:center;"></p>
+                                <br />
+                                <button class="close-modal">Close!</button>
+                              </div>
+                            </div>
+                          </div> 
+                          
+      </table>
+  </section></div>
+                    </div>
+              
+          </div>
+
+    </div>
+    </div>
+  <script>
+ $(document).ready(function() {
+      var count = 0;
+        $('#btn3').click(function(){
+          $("#blur").show()
+          $(".modalDialog").show()
+          });
+         $("#an2").click(function(){
+         
+          $('#tablehidden').show();
+          window.location = "http://127.0.0.1:8000/next/#openModal";
+          
+        })
+        
+         $(function() {
+          $("#openModal").click(function() {
+                 $('#an1').click(function () {              //On click close the gambit box (Neha Singh)
+                 $.getJSON("http://127.0.0.1:8000/Json_scratch/", 
+                function (data) {
+               count = data.length
+               count = count
+               var x = document.getElementById("name").value;
+                    $.ajax({
+                   url: 'mainPage_request/',
+                   data: {
+                    'id': count+1,
+                    'name': x
+                   },
+                    headers:{
+                'X-CSRFToken':'{{csrf_token}}'
+               } ,
+                   success: function(data){
+                     
+                      $("#openModal").remove()
+                      window.location.href = "home.html" +"?="+ x;
+                     window.location.reload()
+                
+                   }
+                  });
+      
+                });
+               
+        });
+              });
+   
+      });
+
+      });
+         $("#tablehidden").on('click','#next1',function(){
+          var table = document.getElementById('tablehidden'), 
+          rows = table.getElementsByTagName('h5'),
+          cust_id = table.getElementsByTagName('p'),
+          i, j, cells, customerId;
+        console.log(rows)
+        var value1 = $(this).html()
+        
+        
+        var queryString = value1;
+        window.location.href = "home.html" +"?="+ queryString;
+          
+      });
+
+      $('#tablehidden .btn-delete').click(function() {              //On click close the gambit box (Neha Singh)
+       
+        var val =$(this).attr('value');
+        alert(val)
+      
+        
+   $.ajax({
+           url: 'node_delete/',
+           data:{
+            'scratch_id':val
+           },
+         
+            headers:{
+        'X-CSRFToken':'{{csrf_token}}'
+       } ,
+           success: function(data){
+           alert("successfully deleted")
+              
+           }
+           
+          });
+         // val = val + 1;
+          $('#column_new').remove();
+          //window.location.reload()
+          val = val + 1;
+        });
+
+
+      let sidebar = document.querySelector(".sidebar");
+      let closeBtn = document.querySelector("#btn");
+      let searchBtn = document.querySelector(".bx-search");
+    
+      closeBtn.addEventListener("click", ()=>{
+        sidebar.classList.toggle("open");
+        menuBtnChange();
+      });
+    
+      searchBtn.addEventListener("click", ()=>{ // Sidebar open when you click on the search iocn
+        sidebar.classList.toggle("open");
+        menuBtnChange(); //calling the function(optional)
+      });
+    
+      // following are the code to change sidebar button(optional)
+      function menuBtnChange() {
+       if(sidebar.classList.contains("open")){
+         closeBtn.classList.replace("bx-menu", "bx-menu-alt-right");//replacing the iocns class
+       }else {
+         closeBtn.classList.replace("bx-menu-alt-right","bx-menu");//replacing the iocns class
+       }
+      }
+      
+      $(".modal-trigger").click(function(e){
+        e.preventDefault();
+       
+      $.getJSON("http://127.0.0.1:8000/Json_scratch/", 
+      function (data) {
+       
+        $.each(data, function (key, value) {
+          var len = value.length;
+         
+            var scratch_id = value.scratch_id;
+            var chatbot_title = value.chatbot_title;
+          console.log(chatbot_title)
+          console.log(scratch_id)  
+        });
+
+      })
+   
+      dataModal = $(this).attr("data-modal");
+      $("#" + dataModal).css({"display":"block"});
+      
+      });
+      
+      $(".close-modal, .modal-sandbox").click(function(){
+        $(".modal").css({"display":"none"});
+     
+      });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+

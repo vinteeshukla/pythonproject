@@ -1,0 +1,1184 @@
+{% load static%}
+<!DOCTYPE html>
+<html>
+<head>
+<title>Home page</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<link rel="stylesheet" href="{% static '/css/common.css'%}">
+<link rel="stylesheet" href="{% static '/css/font-awesome.min.css'%}">
+<link rel="stylesheet" href="{% static '/css/lib.min-chat.css'%}"/> 
+<link rel="stylesheet" href="{% static '/css/app.min-chat.css'%}"/>
+<link rel="shortcut icon" href="../favicon.ico">
+<title>Home page</title>
+</head>
+
+<style>
+
+  div.popup-data
+  {
+      width: 42%;
+      min-height: 72%;
+      display:none;
+      z-index:101;   /*must be greater than the opacity provider*/
+      position:absolute;
+      top:70px;
+      left:32%; /*centers the div*/
+      border-radius: 6px;
+  }
+    .connecting_button{
+      background-color: #2E86C1;
+      border-radius: 20%;
+      width: 10px;
+      height: 25px;
+      bottom: -2px;
+      left: 61.99px;
+      float: left;
+      top:2.8px
+    }
+     #canvas{
+      min-height: 730px;
+    }
+    #connector_canvas{
+    position:absolute;
+    width:100%;
+    height:100%;
+    stroke:#5c96bc;
+    stroke-width:4;
+  }
+  .object{
+    position:relative;
+    height:102px;
+    width:140px;
+    position: absolute;
+    border:1px solid #999;
+    border-radius: 5px;
+    background-color: #F0F3F4;
+    box-shadow: 5px 10px 18px #888888;
+    cursor: pointer;
+  }
+  .up_button{
+      position:absolute;
+      background-color:   #C0C0C0;
+      border-radius: 10%;
+      width: 10px;
+      height: 25px;
+      top: 0px;
+      margin-left: 45%;
+    }
+  .close_button{                                   
+      position:absolute;
+      margin: 0em;
+      width: 2px;
+      height: 2px;
+      left: 0px;
+  }
+  .box{
+      height:80%;
+      overflow: auto;
+  
+      }
+  <!--Scroll the screen up and down (Neha Singh)-->
+  </style>
+  <style>
+  
+  
+  .close {
+    background: #606061;
+    color: #FFFFFF;
+    line-height: 25px;
+    position: absolute;
+    right: -12px;
+    text-align: center;
+    top: -10px;
+    width: 24px;
+    text-decoration: none;
+    font-weight: bold;
+    -webkit-border-radius: 12px;
+    -moz-border-radius: 12px;
+    border-radius: 12px;
+    -moz-box-shadow: 1px 1px 3px #000;
+    -webkit-box-shadow: 1px 1px 3px #000;
+    box-shadow: 1px 1px 3px #000;
+  }
+  .close:hover {
+    background: #6ed1d8;
+  }
+  .button {
+    border: 5px solid #20750D;
+      border-radius: 12px;
+  
+      /*CSS rules already written*/
+  
+      background: #21BC27;
+      color: #CDFFCA;
+      display:inline-block;
+      padding:20px;
+    }
+    div.hide{
+      margin-top: 25px;
+      margin-right: 200px;
+      float: right;
+  
+      {% comment %} top:0;
+      left:0;
+      min-width:70%;
+      min-height:70% {% endcomment %}
+  }
+  
+  
+  
+  </style>
+  <style>
+    
+  
+      
+    .chatArea {
+      background-color: rgb(197, 232, 255);
+      
+      
+    }
+  
+  
+  
+    .powered-by {
+      background-color: rgb(241, 241, 241);
+      color: #000;
+    }
+  
+  
+{% comment %}   
+    .user-chat-bubble, .inputMessage, .inputMessage[disabled], .card-wrapper, .card-block, .card.choose.selected .card-footer, .autogrow_input_wrapper{
+      background-color: rgb(241, 241, 241);
+      color: #000;
+      
+      
+    } {% endcomment %}
+  
+    #wave .dot {
+      background-color: #000;
+    }
+  
+    #send_button_icon {
+      color:#777;
+    }
+  
+    .rating-container {
+      color: rgb(241, 241, 241);
+    }
+  
+    .card-block {
+      border-top: 1px solid rgb(217, 217, 217);
+    }
+    .card-footer {
+      background-color: rgb(217, 217, 217);
+    }
+    .card-footer .text-muted {
+      color: #777;
+    }
+    .card-nav-button button {
+      background-color: rgb(241, 241, 241);
+      color: #000;
+    }
+  
+  
+    ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+      color:#777;
+    }
+    :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+      color:#777;
+      opacity:1;
+    }
+    ::-moz-placeholder { /* Mozilla Firefox 19+ */
+      color:#777;
+      opacity:1;
+    }
+    :-ms-input-placeholder { /* Internet Explorer 10-11 */
+      color:#777;
+    }
+    ::-ms-input-placeholder { /* Microsoft Edge */
+      color:#777;
+    }
+  
+  
+    .calendar_time .mbsc-ios .mbsc-cal-btn-txt,
+    .calendar_time .mbsc-ios .mbsc-cal-hl-now .mbsc-cal-today,
+    .calendar_time .mbsc-ios .mbsc-cal-day,
+    .calendar_time .time_slot a {
+      color: #000;
+    }
+  
+    .calendar_time .mbsc-ios, .calendar_time .mbsc-ios.mbsc-fr-inline .mbsc-fr-w {
+      background-color: rgb(241, 241, 241);
+    }
+  
+    .calendar_time .mbsc-cal-btnc-ym .mbsc-cal-month,
+    .calendar_time .mbsc-cal-btnc-ym .mbsc-cal-year,
+    .calendar_time .mbsc-ios .mbsc-cal th {
+      color: #777;
+    }
+  
+  
+  
+  
+    .my-chat-bubble, .choose, .choose[href], #suggestion-menu-container > * {
+      background-color: rgb(255, 255, 255);
+      color: #000;
+      
+      
+    }
+  
+    .send-enabled #send_button_icon, .pass-button #send_button_icon, .done-button #send_button_icon {
+      color: rgb(255, 255, 255);
+    }
+  
+    .rating-container .rating-stars {
+      color: rgb(255, 255, 255);
+    }
+  
+    .choose.selected, .card.choose.selected .card-wrapper, .card.choose.selected .card-block {
+      background-color: rgb(230, 230, 230);
+      color: #000;
+    }
+  
+    .card.choose.selected {
+      border: 1px solid rgb(255, 255, 255);
+    }
+  
+    .card-nav-button button:hover {
+      background-color: rgb(255, 255, 255);
+      color: #000;
+    }
+  
+  
+    .calendar_time .mbsc-ios.mbsc-fr.mbsc-calendar .mbsc-cal-tabs .mbsc-cal-tab .mbsc-cal-tab-i,
+    .calendar_time .mbsc-ios.mbsc-no-touch .mbsc-cal-day.mbsc-cal-day-v:hover .mbsc-cal-day-fg,
+    .calendar_time .mbsc-ios .mbsc-cal .mbsc-cal-day-sel .mbsc-cal-day-fg,
+    .calendar_time .time_slot:hover a,
+    .calendar_time .mbsc-cal-sc .mbsc-cal-sc-sel .mbsc-cal-sc-cell-i {
+      background-color: rgb(255, 255, 255);
+      color: #000;
+    }
+  
+    .calendar_time .mbsc-ios.mbsc-fr.mbsc-calendar .mbsc-cal-tabs .mbsc-cal-tab.mbsc-cal-tab-sel .mbsc-cal-tab-i{
+      background-color: rgb(230, 230, 230);
+      color: #000;
+    }
+  
+    .calendar_time .time_slot a{
+      background-color: transparent;
+      /* border: solid 1px; */
+      /* border-color: rgb(255, 255, 255); */
+    }
+  
+    .calendar_time  a.slot_selected {
+      background-color: rgb(255, 255, 255);
+      color: #000;
+    }
+  
+  
+  
+  
+  
+    .send-enabled #send_button_icon, .pass-button #send_button_icon, .done-button #send_button_icon {
+      -webkit-text-stroke-width: 1px;
+      -webkit-text-stroke-color: #000;
+      /*text-shadow: 2px 0 0 #000, -2px 0 0 #000, 0 2px 0 #000, 0 -2px 0 #000, 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;*/
+    }
+  .pull-right{
+    top:110;
+  
+  }
+  
+  </style>
+  
+      <body>
+      <div class="top">
+          <div class="header">
+            <div class="navbar" id="nav">
+              <a class="active" href="#"><i class="fa fa-fw fa-home"></i><h5></h5></a>
+              <button class="publish" style="font-size:24px" title="Publish Chatbot"><i class="fa fa-rocket">preview</i></button>
+  
+            </div>
+          </div>
+      </div>
+      <div class="main">
+          <div class="sidebar">
+              <div class="logo-details">
+                <i class='bx bxl-c-plus-plus icon'></i>
+                  <div class="logo_name">Chat Bot App</div>
+                  <i class='bx bx-menu' id="btn" ></i>
+              </div>
+              <ul class="nav-list">
+                <li>
+                    <i class='bx bx-search' ></i>
+                   <input type="text" placeholder="Search...">
+                   <span class="tooltip">Search</span>
+                </li>
+                <li>
+                  <a href="#">
+                    <i class='bx bx-grid-alt'></i>
+                    <span class="links_name">Dashboard</span>
+                  </a>
+                   <span class="tooltip">Dashboard</span>
+                </li>
+                <li>
+                 <a href="#">
+                   <i class='bx bx-user' ></i>
+                   <span class="links_name">User</span>
+                 </a>
+                 <span class="tooltip">User</span>
+               </li>
+               <li>
+                 <a href="#">
+                   <i class='bx bx-chat' ></i>
+                   <span class="links_name">Messages</span>
+                 </a>
+                 <span class="tooltip">Messages</span>
+               </li>
+               <li>
+                 <a href="#">
+                   <i class='bx bx-pie-chart-alt-2' ></i>
+                   <span class="links_name">Analytics</span>
+                 </a>
+                 <span class="tooltip">Analytics</span>
+               </li>
+               <li>
+                 <a href="#">
+                   <i class='bx bx-heart' ></i>
+                   <span class="links_name">Saved</span>
+                 </a>
+                 <span class="tooltip">Saved</span>
+               </li>
+               <li>
+                 <a href="#">
+                   <i class='bx bx-cog' ></i>
+                   <span class="links_name">Setting</span>
+                 </a>
+                 <span class="tooltip">Setting</span>
+               </li>
+              </ul>
+            </div>
+            <div class="home-section">
+                <button id="gambit">Add a gambit</button>
+                <div id="canvas">
+  
+                  
+                  <div class="box">
+                    <svg id='connector_canvas'></svg>
+                  </div>
+                </div>
+            </div>
+      </div>
+      <div class="popup popup-data">
+        <div id="container_new"></div>
+      </div>
+      <div class="popup opacity-provider"></div>
+      <div class="popup2 popup-data2">
+        <div id="container_new2"></div>
+      </div>
+      
+      {% comment %} <script src="{% static 'script/jquery.js' %}"></script> {% endcomment %}
+      <script src="{% static 'script/js.cookie.js' %}"></script>
+      <script src="{% static 'script/bootstrap.js' %}"></script>
+     <script>
+  /* previe box coding by Neha singh */
+  $(document).ready(function(){
+          $(".navbar").on('click','.publish',function(){
+            var obj3 = document.createElement('div');
+            $("div.popup2").show();
+            var counter = 0
+            var key = "key_val";
+            var msg_bubble = 1;
+            var btn_count = 1;
+            var count = [];
+            var fields = [];
+            console.log(count[1])
+            counter = counter + 1;
+            console.log(counter)
+          
+         
+              //$(obj3).append('<div class="jumbotron mt-1"><h2 class="jumbotron-heading text-xs-center">Chatting.com</h2><p class="lead text-xs-center">Talk to my chatbot</p><hr class="my-2"><div class="row"> <div class="col-xs-6 offset-xs-3"><ul class="list-group chat-log js-chat-log"> </ul><div class="input-group input-group-lg mt-1"><input type="text" class="form-control js-text" placeholder="Type here..."/><span class="input-group-btn"><button class="btn btn-primary js-say">Submit</button></span></div></div> </div></div>');
+            $(obj3).append('<ul class="pages"><li class="chat page"><div class="logo" style="position : absolute"></div><div class="chatArea"><ul class="messages"><li class="log col-xs-12 power"><span class="col-xs-4 col-xs-offset-4 powered-by"></span></li><li class="message col-xs-9 pull-left typing" style="display: list-item;"><div class="messageBody ui-chatbox-msg alert chat-bubble user-chat-bubble padding-no-margin pull-left"><span class=""><span class="text-span">Hi there!&nbsp;👋</span></span></div><br><br><div class="messageBody ui-chatbox-msg alert chat-bubble user-chat-bubble padding-no-margin pull-right"><span class="pull-right chat-timestamp" style="display:list-col;">9:46 AM</span></div></li></ul></div><div id="calibrateDiv" style="position: absolute;"></div><div class="inputContainter"><input class="inputMessage" placeholder="Welcome to my home...."><button id="send-button" class="sendButton"><i id="send_button_icon" class="fa" aria-hidden="true"></i</button></div><div id="snackbar-container" class="snackBar" style="visibility:hidden; height: 196px;"><ul class="list-group selectOptions snackbar-options"><li class="media list-group-item choose send-now"<li class="media list-group-item choose send-now" value="human"><div class="media-body va_basline"><h4 class="media-heading snackBar_button small">I like to speak with a human</h4></div></li></ul></div><div id="suggestion-menu-container" class="search-suggestions"><ul class="list-group search-suggestions-options"></ul></div>');
+            $(container_new2).append(obj3);
+            $('.powered-by').append(document.getElementById("nav").getElementsByTagName("h5")[0].innerHTML);
+           var chatterbotUrl = '{% url "chatterbot" %}';
+           var csrftoken = Cookies.get('csrftoken');
+     
+           function csrfSafeMethod(method) {
+             // these HTTP methods do not require CSRF protection
+             return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+           }
+     
+           $.ajaxSetup({
+             beforeSend: function(xhr, settings) {
+               if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                 xhr.setRequestHeader("X-CSRFToken", csrftoken);
+               }
+             }
+           });
+     
+        var $chatlog = $('.text-span');
+        var $input = $('.inputMessage');
+        var $sayButton = $('.sendButton');
+        var $chatout =$(".chat-timestamp");
+        
+           /*function createRow(text) {
+             var $row = $('<li class="list-group-item" style="position: relative;background: #a5dede;border-radius: 40px;padding: 13px;text-align: center;color: #000;margin-left: 11px;margin-top: 11px;"></li>👋<br><br>');
+     
+             $row.text(text);
+             $chatlog.append($row);
+ 
+            }*/
+
+
+
+
+            $.getJSON("http://127.0.0.1:8000/newjoindetails/",
+          function (data) {
+           
+          $.each(data, function (key, value) {
+		  
+		  
+		    msg_bubble = 1;
+            btn_count = 1;
+		   for(var i=0;i<value.length;i++){
+		  var titlex = value[i].title;
+		  var descriptionx = value[i].description;
+		   var username = value[i].chatbot_title;
+		   }
+		    var l = document.getElementById("nav").getElementsByTagName("h5")[0].innerHTML;
+			
+			 let text = titlex;
+                   const msgArr = text.split('&#');
+   //var $row = $('<li class="list-group-item" style="position: relative;background: #a5dede;border-radius: 40px;padding: 13px;text-align: center;color: #000;margin-left: 11px;margin-top: 11px;">'+msgArr[msg_val]+'</li>👋<br><br>');
+
+				   for(var msg_val=0;msg_val<=msgArr.length-2; msg_val++){
+                    msg_bubble++;
+                   console.log('value of message:- ' + msgArr[msg_val]);
+                   var $row = $('<li class="list-group-item" style="position: relative;background: #a5dede;border-radius: 40px;padding: 13px;text-align: center;color: #000;margin-left: 11px;margin-top: 11px;">'+msgArr[msg_val]+'</li>👋<br><br>');
+                   $chatlog.append($row);
+
+           }
+          });
+        });
+
+
+
+        
+
+  
+           function createCol(statement) {
+            var $out = $('<li class="list-col" style="position: relative;background: white;border-radius: 40px;padding: 13px;text-align: center;color: #000;margin-left: 11px;margin-top: 11px;">welcome</li><br><br>');
+    
+           $out.text(statement);
+            $chatout.append($out);
+
+            $('.inputMessage').attr('placeholder',
+              'The data is loaded')
+              document.getElementById('snackbar-container').style.visibility ="visible";
+              
+          }
+  
+   
+           function submitInput() {
+             var inputData = {
+               'text': $input.val()
+     
+             }
+             console.log(inputData)
+             // Display the user's input on the web page
+             //function(inputData.text);
+     
+             var $submit = $.ajax({
+               type: 'POST',
+               url: chatterbotUrl,
+               data: JSON.stringify(inputData),
+               contentType: 'application/json'
+             });
+     
+             $submit.done(function(statement) {
+            
+                createCol(statement.text);
+                
+                  
+  
+                
+             // Clear the input field
+                 $input.val('');
+     
+                 // Scroll to the bottom of the chat interface
+                 $chatlog[0].scrollTop = $chatlog[0].scrollHeight;
+             });
+     
+             $submit.fail(function() {
+               // TODO: Handle errors
+             });
+           }
+     
+           $sayButton.click(function() {
+             submitInput();
+           });
+     
+           $input.keydown(function(event) {
+             // Submit the input when the enter button is pressed
+             if (event.keyCode == 13) {
+               submitInput();
+             }
+           });     
+                    
+   });
+  
+     }); 
+    
+  //});
+  /*preview box coding end */
+  
+  /*main box coding start */
+  $(document).ready(function(){
+      var container = $(".box");
+      var counter = 0
+      var textbox = $("#container_new")
+      var btn = $('<a class="share_btn shpkt"><i class="fa fa-angle-down" aria-hidden="true" style = "color:white"></i><div id = ribbon_down>')
+      var key = "key_val";
+      var msg_bubble = 1;
+      var btn_count = 1;
+      var count = [];
+      
+      $.getJSON("http://127.0.0.1:8000/newjoindetails/",
+      function (data) {
+        var obj = document.createElement('div'); 
+        $.each(data, function (key, value) {
+          var fetchStr = window.location.search;
+          var fetchStr1 = fetchStr.split('?=')[1];
+               //creating a new div
+        
+          for(var i = 0; i < value.length; i++){
+          if(value[i].chatbot_title === fetchStr1 ){
+           console.log(value[i].chatbot_title)
+            console.log(value[i].name)
+            
+           //document.getElementsByTagName("p").innerHTML =  value[i].name;
+           $(obj).append('<div class="object '+counter+'" ui-draggable ui-draggable-handle ui-droppable" style="left: 274.989px; top: 184.991px;"">&#x78</button><div class = "up_button"></div><hr><p class = "show" id = "gambit_'+counter+'" value = "'+ counter +'">'+value[i].name+'</p><hr><div class = "connecting_button" id="connecting_button1"></div><div id="new_connection" class="new_connection"></div></div>')
+  
+  
+           var chatbot_name =  value[i].chatbot_title;
+           console.log(chatbot_name)
+           var New_Gambit_created_name = value[i].name;
+                var fetchStrx = value[i].name;
+           var fetchStr12 = fetchStrx.split(' ')[2];
+           console.log(New_Gambit_created_name)
+           temp = '-';
+           var connec_btn_value = 'object'+counter+temp.concat(value[i].chatbot_title);
+           console.log(connec_btn_value)
+           var New_Gambit_created_id = fetchStr12;
+           console.log(New_Gambit_created_id)
+        
+           
+          }
+  }
+    $.ajax({
+           url:'new_gambit_connection/',
+           type: $(this).attr('method'), 
+            data: {
+            'chatbot_name': chatbot_name,
+            'New_Gambit_created_name': New_Gambit_created_name,
+            'connec_btn_value': connec_btn_value,
+            'New_Gambit_created_id':New_Gambit_created_id
+          },
+    
+    headers:{
+       'X-CSRFToken':'{{csrf_token}}'
+    }
+  }).done(function(data) {
+    
+     alert(data)
+  
+   
+  }).fail(function(err){
+       alert('no data was saved')
+  })
+      }); 
+      $(container).append(obj);
+  
+    });//
+  
+  
+    
+  
+   $("#gambit").click(function() {      //On click of "add a gambit" button create new div
+        var obj = document.createElement('div');      //creating a new div
+        counter = counter + 1;
+        console.log(counter)
+        $(obj).append('<div class="object '+counter+'"><button type="button" class="btn-close" style="height:18px;">&#x78</button><div class = "up_button"></div><hr><p class = "show" id = "gambit_'+counter+'" value = "'+ counter +'">Grid number: '+ counter +'</p><hr><div class = "connecting_button" id="connecting_button1"></div><div id="new_connection" class="new_connection"></div></div>')
+        console.log(counter)
+       
+        $(container).append(obj);
+       
+   
+  $('#gambit, .object').click(function (e) {               // Close Button Using JQuery(Neha Singh)
+          if ($(e.target).attr('value') != 'btn-close') {
+               $('.object').show();
+  
+           }
+        });
+  $('.object .btn-close').click(function () {              //On click close the gambit box (Neha Singh)
+          var fetchStr = window.location.search;
+          var fetchStr1 = fetchStr.split('?=')[1];
+         
+          var chatbot_name = fetchStr1;
+     $.ajax({
+             type: 'delete',
+             url: 'Gambit1_delete/',
+             data: {
+              'chatbot_name': chatbot_name,
+             },
+              headers:{
+          'X-CSRFToken':'{{csrf_token}}'
+         } ,
+             success: function(data){
+                alert("successfully deleted")
+                
+             }
+            });
+  
+          $(this).parent().remove();
+            $('#connector_canvas').remove();
+  });
+
+
+      $('.object').draggable({
+        containment: "#canvas",
+        drag: function(event,ui){
+          console.log("drag inside")
+          var lines = $(this).data('lines');               //Source of line
+           var con_item =$(this).data('connected-item');    //Destination block
+           var con_lines = $(this).data('connected-lines');       //Destination of line
+
+           if(lines) {                                      //If you will drag source block
+             lines.forEach(function(line,id){
+                $(line).attr('x1',$(this).position().left+61.9).attr('y1',$(this).position().top+102);
+             }.bind(this));
+           }
+
+           if(con_lines){                                     //If you will drag destination block
+               con_lines.forEach(function(con_line,id){
+                  $(con_line).attr('x2',$(this).position().left+(parseInt($(this).css('width'))/2))
+                        .attr('y2',$(this).position().top+(parseInt($(this).css('height'))/3)+(id*5));
+               }.bind(this));
+
+           }
+        }
+      });
+
+      $('this').droppable({
+        accept: '.connecting_button',
+        drop: function(event,ui){
+          var item = ui.draggable.closest('this');
+          $(this).data('connected-item',item);
+          ui.draggable.css({top:-2,left:-2});
+               //Total connected lines between all the boxes(it is keep adding)
+           if($(this).data('connected-lines')){             //If connected item has one or more than one line
+                 //All the connected lines between two boxes(it is keep adding)
+               var y2_ = parseInt(item.data('line').attr('y2'));          //showing the y2 axis of item(connected item or destination item)
+               item.data('line').attr($(this).data('connected-lines').length*5);
+               ui.draggable.css({top:2.8,left:61.9});
+              }
+           else {
+            console.log("This is the first line between two boxes")
+              ui.helper.css({top:2.8,left:61.9});
+            $(this).data('connected-lines',[item.data('line')]);
+          }
+
+           item.data('line',null);
+          console.log('dropped');
+        }
+      });
+      $('#connecting_button').draggable({
+        containment: "#canvas",
+        drag: function(event,ui){
+          var _end = $(event.target).parent().position();    //starting coordinate of the line
+          var end = $(event.target).position();
+          console.log(_end,end)
+          if(_end&&end)
+          $(event.target).parent().data('line')
+                                .attr('x2',end.left+_end.left+7).attr('y2',end.top+_end.top+15);
+      },
+     stop: function(event,ui) {
+      console.log("when you left string in the middle")
+        if(!ui.helper.closest('.object').data('line')){
+          console.log("when to come here")
+          return;
+        }
+        ui.helper.css({top: 0,left:60});                        //Change the position of green bullet if it doesnot connect with other box.
+        ui.helper.closest('this').data('line').remove();     // Modification for Connecting Button (draggable line) not moving up now(Seema Kanyawal)
+        ui.helper.closest('this').data('line',null);
+        console.log('stopped');
+        }
+      });
+      $('.connecting_button').on('mousedown',function(e){
+        console.log("mousedown")
+        var cur_ui_item = $(this).closest('this');
+        var connector = $('#connector_canvas');
+        var cur_con;
+      };
+
+      if(!$(cur_ui_item).data('line')){       //If no line is in that small button
+        console.log("It means line adding has been started,yet no line")
+             cur_con = $(document.createElementNS('http://www.w3.org/2000/svg','line'));    //It will create the draggable line
+             
+        }
+      
+         //It will append both boxes i.e. showing the connector.
+        var start = cur_ui_item.position();
+         cur_con.attr('x1',start.left+60).attr('y1',start.top+102);
+         cur_con.attr('x2',start.left+15).attr('y2',start.top+70);
+          })
+      
+    });
+
+    $(container).on('click','.up', function () {        //close the grid box
+            $(this).parent().remove();
+        });
+
+        $(container).on('click','.show', function () {   
+
+          //On click of link, textbox will open
+                console.log(count[1])
+                msg_bubble = 1;
+                $("div.popup").show();
+                var num = $(this).attr('value');
+                console.log(num,'num')
+    
+    
+                  $(textbox).append('<div class="myDiv'+ num +'" id = "main_box"><div id="name_box" contenteditable="true">Gambit No '+ num+1 +'</div><div class="row_1" style="display:inline-block;"><h4>Bot Messages<i class="fa fa-comment-o" style="padding-left: 5px;"></i></h4><hr><div class="container_inside"></div><a class="success"><i class="fa fa-plus"></i>  Add Message</a><div class="user_selection"><form name="demoForm"><select name="demoSelect" class="dropdown"><option value="select" selected>Select Input</option><option value="A">Text Input</option><option value="B">Buttons</option><option value="C">Star Ratings</option><option value="D">Calendar & Time</option><option value="E">Image/File Input</option></select></form><p id = "selected">Select User Input: </p></div></div><div class="row_2" style="display:inline-block;"><div id="input" style="display: block;"><h4><i class="fa fa-pencil" style="padding-right: 5px;"></i>Name<h4 id="check"></h4></h4></div><!-- <h4 id="check"><i class="fa fa-pencil" style="padding-right: 5px;"></i></h4> --><hr><div id="txt_input" style="display: none;font-weight: bold;"><label for="fname">Type Input:</label><br><select name="input_file" id="select_optn"><option>File Upload</option><option>Take Photo</option><option>File Upload & Take Photo</option></select></div><div id="add_btn"><button class="user_button'+ num +'" id = "add_new_btn" contenteditable="true">Button</button><br><div class="extra_btn"></div><button class="user_add_button"><i class="fa fa-plus"></i>  Add Button</button></div><div id="star_rating" style="display: none;font-weight: bold;"><div id="star_number"><label for="fname">Number of stars:</label><br><select name="input_file" id="select_optn"><option>3</option><option>4</option><option>5</option></select></div><div id="star_steps"><label for="fname">Steps in stars:</label><br><select name="input_file" id="select_optn"><option>0.5</option><option>1</option></select></div></div><div id="txt_input_new" style="display: none;font-weight: bold;"><label for="fname">Type Input:</label><br><select name="input_file" id="select_optn"><option>Name</option><option>Full Name</option><option>Email</option><option>Mobile</option><option>Password</option><option>Custom Text</option></select></div><div id="calendar_time" style="display:none;"><div class="column"><h2 style="text-align: center;">Calendar</h2><label for="fname">Data Limitation Type</label><select name="input_file" id="select_optn_new"><option>Absolute Date</option><option>Relative Date</option></select><div id="two_col" style="margin-top: 10px;"><div id="min"><label for="fname">Min Date</label><br><input type="date" name="date"></div><div id="max"><label for="fname">Max Date</label><br><input type="date" name="date"></div></div></div><div class="column"><h2 style="text-align: center;">Time</h2><label for="fname">Appointment Duration</label><select name="input_file" id="select_optn_new"><option>15 minutes</option><option>30 minutes</option><option>1 hour</option><option>2 hour</option></select><div id="two_col" style="margin-top: 10px;"><div id="min"  style="float: left; margin-left: 10px;"><label for="fname">Start Time</label><br><select name="input_file" id="select_optn_new"><option>09:00 AM</option><option>10:00 AM</option><option>11:00 AM</option><option>12:00 AM</option></select></div><div id="max"  style="float:right; margin-right: 10px;"><label for="fname">End Time</label><br><select name="input_file" id="select_optn_new"><option>09:00 AM</option><option>10:00 AM</option><option>11:00 AM</option><option>12:00 AM</option></select></div></div></div></div></div><div class="row_3"><button class="cancel">Cancel</button><button class="save" value = "input_msg'+ num +'">Save</button></div></div>')
+                  
+                  console.log(count[num-1])
+                 
+                  for(var i=2; i<= count[num-1];i++){
+                    console.log("enter",i)
+                    console.log(window.localStorage.getItem(num+i))
+                    //var structure = $('<div class="bubble"><div class="hide" id="hide_btn"><i class="fa fa-close" id="close_btn"></i></div><div id = "add_msg_" class=" bubble-bottom-left" contenteditable>Type any text here</div></div>');
+                    //$(".container_inside").append(structure);
+               
+                  }
+                 /*  var box_no = $("#main_box").attr('class').split("")[5];
+                  var name = $("#name_box").text();
+                 console.log(name)
+                  var title= $("#add_msg_").text();
+                  console.log(title)
+                  var description = $("#add_new_button").text();
+                  console.log(description)
+                  $("#add_btn").show();
+                btn_val = $(".user_button"+box_no).text();
+    
+                
+                if(btn_val == "Button"){
+                  if(window.localStorage.getItem("btn_key"+box_no)){
+                    $(".user_button"+box_no).text(window.localStorage.getItem("btn_key"+box_no))
+                    console.log(window.localStorage.getItem("btn_key"+box_no))
+                  }
+                } */ 
+             
+                      
+        $.getJSON("http://127.0.0.1:8000/newjoindetails/",
+          function (data) {
+           
+          $.each(data, function (key, value) {
+            msg_bubble = 1;
+            btn_count = 1;
+            var box_no = $("#main_box").attr('class').split("")[5];
+            //var structure = '';
+            var detail_id = num;
+            var len = value.length;
+            alert("length of success postx value:- " + len)
+            for(var i=0;i<value.length;i++){
+            var titlex = value[i].title;
+            var x = count.length;
+            console.log(titlex)
+            var descriptionx = value[i].description;
+            console.log(descriptionx)
+            
+                var id = value[i].detail_id;
+                var username = value[i].chatbot_title;
+                var name = value[i].name;
+                    }
+          
+           var l = document.getElementById("nav").getElementsByTagName("h5")[0].innerHTML;
+    
+    
+           //var elem = document.getElementById('add_msg_');
+           if(username==l){
+                 $.ajax({
+                   url: 'newpostx/',
+                   data: {
+                    'name': name,
+                     'title': titlex,
+                     'description': descriptionx,
+                     'detail_id': x+1,
+                     'chatbot_title':username
+                          },
+                    headers:{
+                    'X-CSRFToken':'{{csrf_token}}'
+                 }
+                }).done(function(data) {
+                
+                  $("#add_btn").show();
+                   var box_no = $("#main_box").attr('class').split("")[5];
+                   var result= $('#add_msg_').text().split('&#');
+                   document.getElementById("name_box").innerHTML = name;
+                   
+    
+                   let text = titlex;
+                   const msgArr = text.split('&#');
+    
+                   var structure = $('<div class="bubble"><div class="hide'+ msg_bubble +'" id="hide_btn"><i class="fa fa-close" id="close_btn"></i></div><div id = "add_msg_'+ box_no+msg_bubble +'" class=" bubble-bottom-left" contenteditable>'+msgArr[msg_val]+'</div></div>');
+    
+                   for(var msg_val=0;msg_val<=msgArr.length-2; msg_val++){
+                    msg_bubble++;
+                   console.log('value of message:- ' + msgArr[msg_val]);
+                    var structure = $('<div class="bubble"><div class="hide'+ msg_bubble +'" id="hide_btn"><i class="fa fa-close" id="close_btn"></i></div><div id = "add_msg_" class=" bubble-bottom-left" contenteditable>'+msgArr[msg_val]+'</div></div>');
+                    var box_no = $("#main_box").attr('class').split("")[5];
+                    $('.container_inside').append($(structure)).show();
+                  }
+                
+                 // var structure = $('<div class="bubble"><div class="hide'+ msg_bubble +'" id="hide_btn"><i class="fa fa-close" id="close_btn"></i></div><div id = "add_msg_'+ box_no+msg_bubble +'" class=" bubble-bottom-left" contenteditable>'+titlex.split('&#')[0]+'</div></div>');
+                  btn_val = $(".user_button"+box_no).text();
+                  
+             
+                  //$('button#add_new_btn.user_button()').innerHTML = descriptionx;
+                 //$('select[this.value = 'B']').val(descriptionx);
+                 let desc = descriptionx;
+                 const descArr = desc.split('&#');
+                 if(btn_val == "Button"){
+                  btn_count++;
+                  for(var button_val=0;button_val<=descArr.length-2;button_val++){
+                    $(".user_button"+box_no).text(descArr[button_val]);
+                
+    
+                    var btn_structure = $('<button class="user_button'+box_no+ btn_count +'" id = "add_new_btn" contenteditable="true">Button</button><br>')
+                    $(".extra_btn").append(btn_structure);
+                    if($(".user_button"+box_no+btn_count).text()=="Button"){
+                       $(".user_button"+box_no+btn_count).text(descArr[button_val]);
+                           }
+                
+                  }
+                  }
+                
+                    }).fail(function(err){
+                    alert('no data was saved')
+                })
+            }
+            else{
+              alert("not success")
+            }
+               });
+              });
+            
+        });
+    
+             /*finished by Neha Singh */
+         /*finished by Neha Singh */
+
+    $(textbox).on('click','.cancel',function(){      //textbox will close
+        btn_count = 1;
+        $("#main_box").remove();
+        $("div.popup").hide();  
+        $('.row_2','#add_btn').show()
+        console.log(container.attr('.box'),'267')
+        });
+  
+var container_box = document.createElement('div')
+    container_box.style.cssText = 'padding: 5px; margin: 20px, width: 220px, border: 1px dashed, overflow: hidden, borderTopColor: #999, borderBottomColor: #999, borderLeftColor: #999, borderRightColor: #999'
+
+    $(textbox).on('click','.success',function(){      //Msg bubble will append on click of add message bubble button
+        msg_bubble++;
+        var box_no = $("#main_box").attr('class').split("")[5];
+        console.log(msg_bubble)
+        var structure = $('<div class="bubble"><div class="hide'+ msg_bubble +'" id="hide_btn"><i class="fa fa-close" id="close_btn"></i></div><div id = "add_msg_'+ box_no+msg_bubble +'" class=" bubble-bottom-left" contenteditable>Type any text here</div></div>');
+        $(".container_inside").append(structure);
+        if($("#add_msg_"+box_no+msg_bubble).text()=="Type any text here"){
+                if(window.localStorage.getItem(box_no+msg_bubble)){
+                    //$("#add_msg_"+box_no+msg_bubble).text(window.localStorage.getItem(box_no+msg_bubble));
+                    $("#add_msg_"+box_no+msg_bubble).text();
+                }
+            }
+        console.log(window.localStorage.getItem(box_no+msg_bubble))
+        });
+ $(textbox).on('click','.user_add_button',function(){
+        btn_count++;
+        console.log(btn_count,"button count")
+          var box_no = $("#main_box").attr('class').split("")[5];
+          var btn_structure = $('<button class="user_button'+box_no+ btn_count +'" id = "add_new_btn" contenteditable="true">Button</button><br>')
+            $(".extra_btn").append(btn_structure);
+            if($(".user_button"+box_no+btn_count).text()=="Button"){
+                if(window.localStorage.getItem("newkey"+box_no+btn_count)){
+                 
+                   // $(".user_button"+box_no+btn_count).text(window.localStorage.getItem("newkey"+box_no+btn_count));
+                   $(".user_button"+box_no+btn_count).text()
+                }
+            }
+        });
+
+      $('select').on('change', function() {
+        alert( this.value );
+      });
+ function getCookie(cname) {
+        var name = cname + "=",
+         decodedCookie = decodeURIComponent(document.cookie),
+        ca = decodedCookie.split(';');
+        for(var i = 0; i <ca.length; i++) {
+          var c = ca[i];
+           while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+          }
+          if (c.indexOf(name) == 0) {
+           return c.substring(name.length, c.length);
+        }
+      }
+      return "";
+     }
+ // Generic Function to process Ajax Calls
+      function callAJAX(url, header, parameters, req_type, successCallback, 
+      beforeSendCallback, completeCallback ) {
+      jQuery.ajax({
+      type : req_type,
+      url : url,
+      headers:{
+        'X-CSRFToken':'{{csrf_token}}'
+       } ,
+      data :  parameters,
+      beforeSend : beforeSendCallback,
+      complete : completeCallback,
+      success : successCallback,
+      error : function(xhr, textStatus, errorThrown) {
+          console.log( 'error' + textStatus + ' ' + xhr + ' ' + errorThrown );
+      },
+      async: false
+    });
+    } 
+       $(textbox).on('click','.save',function(){      //textbox will save
+        var val = $(this).attr('value')
+        var t = window.localStorage.getItem("key_val1");
+        var chatbot_title = document.getElementById("nav").getElementsByTagName("h5")[0].innerHTML
+        
+        var num = val.split("")[9]
+        var msg_new = $("#"+val).text();
+        var btn_val = $(".user_button"+val.split("")[9]).text();
+        console.log(btn_val,"button value")
+        var box_no = $("#main_box").attr('class').split("")[5];
+        window.localStorage.setItem(key+box_no,msg_new);
+        window.localStorage.setItem("btn_key"+box_no,btn_val)
+        console.log(window.localStorage.getItem("btn_key1"))
+        console.log(msg_bubble)
+        count.push(msg_bubble)
+        console.log(count)
+        var temp = '&#'
+       var varx = '';
+       var vary ='';
+       var namex = $("#name_box").text();
+        if(msg_bubble>1){
+            for(var i=2; i<=msg_bubble; i++){
+                console.log(box_no+i)
+                window.localStorage.setItem(box_no+i,$("#add_msg_"+box_no+i).text())
+                console.log(window.localStorage.getItem(box_no+i))
+                var x = window.localStorage.getItem(box_no+i)
+                varx = varx +x.concat(temp)
+                                      }
+                        }
+         
+        if(btn_count>1){
+          for(var i=2; i<= btn_count; i++){
+            window.localStorage.setItem("newkey"+box_no+i,$(".user_button"+box_no+i).text())
+            console.log(i,window.localStorage.getItem("newkey"+box_no+i),"after")
+            var y = window.localStorage.getItem("newkey"+box_no+i)+temp
+             vary = vary + temp.concat(y)
+             var t = window.localStorage.getItem("btn_key"+box_no)
+             var l = t + vary
+          }
+         }
+
+         $.ajax({
+           url:'newpostx/',
+           type: $(this).attr('method'), 
+           data: {
+           'name': namex,
+            'title': varx,
+            'description': l,
+            'detail_id':num,
+            'chatbot_title':chatbot_title
+                 },
+           
+           headers:{
+              'X-CSRFToken':'{{csrf_token}}'
+           }
+         }).done(function(data) {
+           
+            alert(data)
+            
+        }).fail(function(err){
+              alert('no data was saved')
+       })
+
+            
+       $("#main_box").remove();
+       $("div.popup").hide(); 
+
+            console.log($("#main_box").attr('class'))
+            
+ });
+
+
+
+
+$(textbox).on('click','#hide_btn',function(){      //input message bubble will close
+             var num = $(this).attr('class').split("")
+             var box_no = $("#main_box").attr('class').split("")[5];
+            console.log(box_no+num[4])
+            alert(window.localStorage.getItem(box_no+num[4]))
+            window.localStorage.removeItem(box_no+num[4])
+            if(window.localStorage.getItem(box_no+num[4])){
+                alert("doesnot delete")
+            }
+            else{
+                alert(window.localStorage.getItem(num[4]))
+                alert("successfully deleted")
+            }
+            $(this).parent().remove();
+        });
+
+       $(textbox).on('click',".dropdown",function(){
+        var box_no = $("#main_box").attr('class').split("")[5];
+          $('select').on('change',function(){
+            if(this.value == "A"){      //textinput
+                $("#txt_input").hide();
+                $("#add_btn").hide();
+                $("#star_rating").hide();
+                $("#calendar_time").hide();
+                $("#txt_input_new").show();
+            }
+            else if (this.value == 'B'){      //buttons
+                $("#txt_input").hide();
+                $("#add_btn").show();
+                $("#star_rating").hide();
+                $("#calendar_time").hide();
+                $("#txt_input_new").hide();
+                btn_val = $(".user_button"+box_no).text();
+                if(btn_val == "Button"){
+                  if(window.localStorage.getItem("btn_key"+box_no)){
+                    $(".user_button"+box_no).text()
+                   
+                  }
+                }
+            }
+            else if (this.value == 'C'){      //star ratings
+                $("#txt_input").hide();
+                $("#add_btn").hide();
+                $("#star_rating").hide();
+                $("#calendar_time").hide();
+                $("#txt_input_new").hide();
+            }
+            else if (this.value == 'D'){      //calendar & time
+                $("#txt_input").hide();
+                $("#add_btn").hide();
+                $("#star_rating").hide();
+                $("#calendar_time").hide();
+                $("#txt_input_new").hide();
+            }
+            else if (this.value == 'E'){      //image/input field
+                $("#txt_input").hide();
+                $("#add_btn").hide();
+                $("#star_rating").hide();
+                $("#calendar_time").hide();
+                $("#txt_input_new").hide();
+            }
+        });
+       });
+    });
+
+    let sidebar = document.querySelector(".sidebar");
+  let closeBtn = document.querySelector("#btn");
+  let searchBtn = document.querySelector(".bx-search");
+
+  closeBtn.addEventListener("click", ()=>{
+    sidebar.classList.toggle("open");
+    menuBtnChange();//calling the function(optional)
+  });
+
+  searchBtn.addEventListener("click", ()=>{ // Sidebar open when you click on the search iocn
+    sidebar.classList.toggle("open");
+    menuBtnChange(); //calling the function(optional)
+  });
+
+  // following are the code to change sidebar button(optional)
+  function menuBtnChange() {
+   if(sidebar.classList.contains("open")){
+     closeBtn.classList.replace("bx-menu", "bx-menu-alt-right");//replacing the iocns class
+   }else {
+     closeBtn.classList.replace("bx-menu-alt-right","bx-menu");//replacing the iocns class
+   }
+  }
+
+
+        function showData() {
+        var theSelect = demoForm.demoSelect;
+  
+        if (theSelect[theSelect.selectedIndex].value == 'B'){       //Buttons
+            document.getElementById('add_btn').style.display = "block";
+            document.getElementById('txt_input').style.display = "none";
+            document.getElementById("star_rating").style.display = "none";
+            document.getElementById("txt_input_new").style.display = "none";
+            document.getElementById('calendar_time').style.display = "none";
+           
+        }
+        else if (theSelect[theSelect.selectedIndex].value == "E"){      //Image/file Input
+            document.getElementById('add_btn').style.display = "none";
+            document.getElementById('txt_input').style.display = "block";
+            document.getElementById("star_rating").style.display = "none";
+            document.getElementById("txt_input_new").style.display = "none";
+            document.getElementById('calendar_time').style.display = "none";
+        }
+        else if (theSelect[theSelect.selectedIndex].value == "C"){      //star ratings
+            document.getElementById("star_rating").style.display = "block";
+            document.getElementById('add_btn').style.display = "none";
+            document.getElementById('txt_input').style.display = "none";
+            document.getElementById("txt_input_new").style.display = "none";
+            document.getElementById('calendar_time').style.display = "none";
+        }
+        else if (theSelect[theSelect.selectedIndex].value == "A"){        //Text Input
+            document.getElementById("txt_input_new").style.display = "block";
+            document.getElementById("star_rating").style.display = "none";
+            document.getElementById('add_btn').style.display = "none";
+            document.getElementById('txt_input').style.display = "none";
+            document.getElementById('calendar_time').style.display = "none";
+        }
+        else if (theSelect[theSelect.selectedIndex].value == "D"){        //Calendar & Time
+            document.getElementById('calendar_time').style.display = "block";
+            document.getElementById("txt_input_new").style.display = "none";
+            document.getElementById("star_rating").style.display = "none";
+            document.getElementById('add_btn').style.display = "none";
+            document.getElementById('txt_input').style.display = "none";
+        }
+        else if (theSelect[theSelect.selectedIndex].value == "select"){
+            document.getElementById('add_btn').style.display = "none";
+            document.getElementById('txt_input').style.display = "none";
+            document.getElementById("star_rating").style.display = "none";
+            document.getElementById("txt_input_new").style.display = "none";
+            document.getElementById('calendar_time').style.display = "none";
+        }
+    }
+    </script>
+   
+<script>
+var fetchStr = window.location.search;
+var fetchStr1 = fetchStr.split('?=')[1];
+
+document.getElementById("nav").getElementsByTagName("h5")[0].innerHTML =  fetchStr1; 
+</script>
+   
+</body>
+</html>
+ 

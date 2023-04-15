@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Drag & Drop</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+</head>
+<style>
+  html,body{width:100%;height:100%}
+html,body,div{margin:0px;padding:0px;}
+
+#ui-browser,#canvas,#property-browser{
+  height:100%;
+  display:inline-block;
+  box-sizing:border-box;
+  position:relative;
+}
+
+#ui-browser{
+  width:20%;
+  background-color:#eee;
+  float: left;
+  overflow:hidden;
+}
+
+#canvas{
+  width:60%;
+  right: 2;
+}
+
+#property-browser{
+  width:20%;
+  background-color:#eee;
+}
+
+
+/*Anchor CSS*/
+.anchor{
+  opacity:0.5;
+  width: 10px;
+  height: 100%;
+  background-color: #0ebeff;
+  position: absolute;
+  transition: width ease-in-out 0.2s;
+}
+
+#ui-browser:hover > .anchor, #property-browser:hover > .anchor{
+  background-color: #ffbe00;
+  width: 10px;
+  opacity:1;
+}
+
+#ui-browser .anchor{
+  right:0px;
+}
+
+.ui-item{
+  postion:absolute;
+  width:50px;
+  height:50px;
+  background-color:#eef;
+  top:-2px;
+  left:-2px;
+}
+
+.con_anchor{
+    width: 8px;
+    height: 8px;
+    background-color: #47cf73;
+    border-radius: 50%;
+    z-index:5;
+}
+
+#connector_canvas{
+  position:absolute;
+  width:100%;
+  height:100%;
+  stroke:#5c96bc;
+  stroke-width:2
+}
+
+.library{
+  border-left:10px solid #5c96bc;
+  background-color:white;
+  color:#0ebeff;
+  padding-bottom: 1px;
+}
+
+.library ul{
+  list-style-type:none;
+}
+
+.library .name-title{
+  text-align:center;
+  padding-top:5px;
+}
+
+.library ul li{
+  border-bottom:1px solid #eee;
+  margin-right:20px;
+  color:#4c4545;
+  padding: 5px;
+  margin-left: 15px;
+  cursor: pointer;
+  transition: all ease-out 0.1s; 
+}
+
+.library ul li:hover{
+  background-color:#4c4545;
+  color:white;
+  text-align:center;
+  font-size:1.2em;
+}
+</style>
+<body>
+<div id="ui-browser">
+  <div class="anchor">
+  </div>
+  <div id="control-library" class="library">
+    <div class="name-title">Control Library
+    </div>
+    <ul>
+       <li>Control A</li>
+       <li>Control B</li>
+       <li>Control C</li>
+       <li>Control D</li>
+    </ul>
+  </div>
+</div>
+<div id="canvas">
+     <svg id='connector_canvas'></svg>                            
+     <div class="ui-item item-1" id="box1"><div class="con_anchor"></div></div>
+     <div class="ui-item item-2" id="box2"><div class="con_anchor"></div></div>
+     <div class="ui-item item-3" id="box3"><div class="con_anchor"></div></div>
+     <div class="ui-item item-1"><div class="con_anchor"></div></div>
+     <div class="ui-item item-2"><div class="con_anchor"></div></div>
+     <div class="ui-item item-3"><div class="con_anchor"></div></div>
+</div>
+<div id="property-browser"></div>
+
+<script>
+
+
+$('.ui-item').draggable({                             //This draggable works only after line connect to the box and you will drag the box.
+  containment: "#canvas",
+  drag: function( event, ui ) {
+           var lines = $(this).data('lines');               //Source of line
+           var con_item =$(this).data('connected-item');    //Destination block
+           var con_lines = $(this).data('connected-lines');       //Destination of line
+  
+           if(lines) {                                      //If you will drag source block
+             lines.forEach(function(line,id){
+                $(line).attr('x1',$(this).position().left).attr('y1',$(this).position().top+1); 
+             }.bind(this));
+           }
+    
+           if(con_lines){                                     //If you will drag destination block
+               con_lines.forEach(function(con_line,id){
+                  $(con_line).attr('x2',$(this).position().left+5)
+                        .attr('y2',$(this).position().top+(parseInt($(this).css('height'))/2)+(id*5));
+               }.bind(this));
+              
+           }
+           
+     }
+});
+
+$('.ui-item').droppable({                            
+  accept: '.con_anchor',
+  drop: function(event,ui){
+     var item = ui.draggable.closest('.ui-item');     //ui-item of which button started to drag
+     $(this).data('connected-item',item);             //Above described item used as connected-item
+     ui.draggable.css({top:-2,left:-2});
+     item.data('lines').push(item.data('line'));      //Total connected lines between all the boxes(it is keep adding)
+     if($(this).data('connected-lines')){             //If connected item has one or more than one line
+        $(this).data('connected-lines').push(item.data('line'));    //All the connected lines between two boxes(it is keep adding)
+         var y2_ = parseInt(item.data('line').attr('y2'));          //showing the y2 axis of item(connected item or destination item)
+         item.data('line').attr('y2',y2_+$(this).data('connected-lines').length*5);
+        }
+     else {
+      $(this).data('connected-lines',[item.data('line')]);
+    }
+    
+     item.data('line',null);
+  }
+});
+
+
+$('.con_anchor').draggable({                    //This will call when you will drag the line.
+     containment: "#canvas",
+     drag: function( event, ui ) {
+       var _end = $(event.target).parent().position();    //starting coordinate of the line
+       var end = $(event.target).position();            //Ending coordinate of the line
+       $(event.target).parent().data('line')
+                                .attr('x2',end.left+_end.left+5).attr('y2',end.top+_end.top+2);
+      },
+     stop: function(event,ui) {
+      console.log("stop function")
+        if(!ui.helper.closest('.ui-item').data('line')){ 
+          console.log("when you reach at destination")
+          return;
+        }
+        ui.helper.css({top:-2,left:-2});                        //Change the position of green bullet if it doesnot connect with other box.
+        ui.helper.closest('.ui-item').data('line').remove();
+        ui.helper.closest('.ui-item').data('line',null);
+        console.log("when left in the middle")
+      }
+});
+
+
+$('.con_anchor').on('mousedown',function(e){            //This function calls when you will click/drag that line pointer.
+    var cur_ui_item = $(this).closest('.ui-item'); 
+    var connector = $('#connector_canvas');
+    var cur_con;
+  if(!$(cur_ui_item).data('lines')){ 
+    $(cur_ui_item).data('lines',[])
+  };
+  
+  if(!$(cur_ui_item).data('line')){       //If no line is in that small button
+         cur_con = $(document.createElementNS('http://www.w3.org/2000/svg','line'));    //It will create the draggable line
+         cur_ui_item.data('line',cur_con);
+    } 
+  else{ 
+    cur_con = cur_ui_item.data('line');
+  }
+  
+    connector.append(cur_con);          //It will append both boxes i.e. showing the connector.
+    var start = cur_ui_item.position();
+     cur_con.attr('x1',start.left).attr('y1',start.top+1);
+     cur_con.attr('x2',start.left+1).attr('y2',start.top+1);
+});
+</script>
+</body>
+</html>
+
+
+
