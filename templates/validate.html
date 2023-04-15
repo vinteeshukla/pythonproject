@@ -1,0 +1,513 @@
+{% load static%}
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>Home page</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <link rel="stylesheet" href="{% static '/css/common.css'%}">
+</head>
+<style>
+  .connecting_button{
+    background-color: #2E86C1;
+    border-radius: 20%;
+    width: 15px;
+    height: 30px;
+    bottom: -3px;
+    left: 60px;x
+    float: left;
+  }
+   #canvas{
+    min-height: 730px;
+  }
+  #connector_canvas{
+  position:absolute;
+  width:100%;
+  height:100%;
+  stroke:#5c96bc;
+  stroke-width:4;
+}
+.object{
+  position:relative;
+  height:102px;
+  width:140px;
+  position: absolute;
+  border:1px solid #999;
+  border-radius: 5px;
+  background-color: #F0F3F4;
+  box-shadow: 5px 10px 18px #888888;
+  cursor: pointer;
+}
+.up_button{
+    position:absolute;
+    background-color:   #C0C0C0;
+    border-radius: 10%;
+    width: 15px;
+    height: 30px;
+    top: 0px;
+    margin-left: 45%;
+  }
+.close_button{
+    position:absolute;
+    margin: 0em;
+    width: 2px;
+    height: 2px;
+    left: 0px;
+}
+
+</style>
+    <body>
+    <div class="top">
+        <div class="header">
+          <div class="navbar">
+            <a class="active" href="#"><i class="fa fa-fw fa-home"></i></a>
+            <button class="publish" style="font-size:24px" title="Publish Chatbot"><i class="fa fa-rocket"></i></button>
+          </div>
+        </div>
+    </div>
+    <div class="main">
+        <div class="sidebar">
+            <div class="logo-details">
+              <i class='bx bxl-c-plus-plus icon'></i>
+                <div class="logo_name">Chat Bot App</div>
+                <i class='bx bx-menu' id="btn" ></i>
+            </div>
+            <ul class="nav-list">
+              <li>
+                  <i class='bx bx-search' ></i>
+                 <input type="text" placeholder="Search...">
+                 <span class="tooltip">Search</span>
+              </li>
+              <li>
+                <a href="#">
+                  <i class='bx bx-grid-alt'></i>
+                  <span class="links_name">Dashboard</span>
+                </a>
+                 <span class="tooltip">Dashboard</span>
+              </li>
+              <li>
+               <a href="#">
+                 <i class='bx bx-user' ></i>
+                 <span class="links_name">User</span>
+               </a>
+               <span class="tooltip">User</span>
+             </li>
+             <li>
+               <a href="#">
+                 <i class='bx bx-chat' ></i>
+                 <span class="links_name">Messages</span>
+               </a>
+               <span class="tooltip">Messages</span>
+             </li>
+             <li>
+               <a href="#">
+                 <i class='bx bx-pie-chart-alt-2' ></i>
+                 <span class="links_name">Analytics</span>
+               </a>
+               <span class="tooltip">Analytics</span>
+             </li>
+             <li>
+               <a href="#">
+                 <i class='bx bx-heart' ></i>
+                 <span class="links_name">Saved</span>
+               </a>
+               <span class="tooltip">Saved</span>
+             </li>
+             <li>
+               <a href="#">
+                 <i class='bx bx-cog' ></i>
+                 <span class="links_name">Setting</span>
+               </a>
+               <span class="tooltip">Setting</span>
+             </li>
+            </ul>
+          </div>
+          <div class="home-section">
+              <button id="gambit">Add a gambit</button>
+              <div id="canvas">
+                <div class="box">
+                  <svg id='connector_canvas'></svg>
+                </div>
+              </div>
+          </div>
+    </div>
+    <div class="popup popup-data">
+      <div id="container_new"></div>
+    </div>
+    <div class="popup opacity-provider"></div>
+    <script>
+
+
+  $(document).ready(function(){
+    var container = $(".box");
+    var counter = 0
+    var textbox = $("#container_new")
+    var btn = $('<a class="share_btn shpkt"><i class="fa fa-angle-down" aria-hidden="true" style = "color:white"></i><div id = ribbon_down>')
+    var key = "key_val";
+    var msg_bubble = 1;
+    var btn_count = 1;
+    var count = [];
+
+
+    $("#gambit").click(function() {      //On click of "add a gambit" button create new div
+      var obj = document.createElement('div');      //creating a new div
+      counter = counter + 1;
+      console.log(counter)
+
+      $(obj).append('<div class="object '+counter+'"><button id="close-btn">Close-></button><div class = "up_button">&#10006</div><p class = "show" id = "gambit_'+counter+'" value = "'+ counter +'">Grid number: '+ counter +'</p><div class = "connecting_button"></div></div>')
+      console.log(counter)
+
+      $(container).append(obj);
+
+      $('#gambit, .object').click(function (e) {
+        if ($(e.target).attr('value') != 'up_button') {
+             $('.object').show();
+
+         }
+      });
+      $('object, .up_button').click(function () {              //On click close the gambit box
+        $(this).parent().remove();
+
+      });
+
+      $('.object').draggable({
+        containment: "#canvas",
+        drag: function(event,ui){
+          console.log("drag inside")
+          var lines = $(this).data('lines');               //Source of line
+           var con_item =$(this).data('connected-item');    //Destination block
+           var con_lines = $(this).data('connected-lines');       //Destination of line
+
+           if(lines) {                                      //If you will drag source block
+             lines.forEach(function(line,id){
+                $(line).attr('x1',$(this).position().left+60).attr('y1',$(this).position().top+102);
+             }.bind(this));
+           }
+
+           if(con_lines){                                     //If you will drag destination block
+               con_lines.forEach(function(con_line,id){
+                  $(con_line).attr('x2',$(this).position().left+(parseInt($(this).css('width'))/2))
+                        .attr('y2',$(this).position().top+(parseInt($(this).css('height'))/3)+(id*5));
+               }.bind(this));
+
+           }
+        }
+      });
+
+      $('.object').droppable({
+        accept: '.connecting_button',
+        drop: function(event,ui){
+          var item = ui.draggable.closest('.object');
+          $(this).data('connected-item',item);
+          ui.draggable.css({top:-2,left:-2});
+           item.data('lines').push(item.data('line'));      //Total connected lines between all the boxes(it is keep adding)
+           if($(this).data('connected-lines')){             //If connected item has one or more than one line
+              $(this).data('connected-lines').push(item.data('line'));    //All the connected lines between two boxes(it is keep adding)
+               var y2_ = parseInt(item.data('line').attr('y2'));          //showing the y2 axis of item(connected item or destination item)
+               item.data('line').attr('y2',y2_+$(this).data('connected-lines').length*5);
+               ui.draggable.css({top:-10,left:60});
+              }
+           else {
+            console.log("This is the first line between two boxes")
+              ui.helper.css({top:-10,left:60});
+            $(this).data('connected-lines',[item.data('line')]);
+          }
+
+           item.data('line',null);
+          console.log('dropped');
+        }
+      });
+      $('.connecting_button').draggable({
+        containment: "#canvas",
+        drag: function(event,ui){
+          var _end = $(event.target).parent().position();    //starting coordinate of the line
+          var end = $(event.target).position();
+          console.log(_end,end)
+          if(_end&&end)
+          $(event.target).parent().data('line')
+                                .attr('x2',end.left+_end.left+7).attr('y2',end.top+_end.top+15);
+      },
+     stop: function(event,ui) {
+      console.log("when you left string in the middle")
+        if(!ui.helper.closest('.object').data('line')){
+          console.log("when to come here")
+          return;
+        }
+        ui.helper.css({top: -10,left:60});                        //Change the position of green bullet if it doesnot connect with other box.
+        ui.helper.closest('.object').data('line').remove();
+        ui.helper.closest('.object').data('line',null);
+        console.log('stopped');
+        }
+      });
+      $('.connecting_button').on('mousedown',function(e){
+        console.log("mousedown")
+        var cur_ui_item = $(this).closest('.object');
+        var connector = $('#connector_canvas');
+        var cur_con;
+        if(!$(cur_ui_item).data('lines')){
+        console.log("For multiple lines")
+        $(cur_ui_item).data('lines',[])
+      };
+
+      if(!$(cur_ui_item).data('line')){       //If no line is in that small button
+        console.log("It means line adding has been started,yet no line")
+             cur_con = $(document.createElementNS('http://www.w3.org/2000/svg','line'));    //It will create the draggable line
+             cur_ui_item.data('line',cur_con);
+        }
+      else{
+        cur_con = cur_ui_item.data('line');
+        console.log("If line is already there")
+      }
+
+        connector.append(cur_con);          //It will append both boxes i.e. showing the connector.
+        var start = cur_ui_item.position();
+         cur_con.attr('x1',start.left+60).attr('y1',start.top+102);
+         cur_con.attr('x2',start.left+15).attr('y2',start.top+70);
+          })
+      $('.box').append(container)
+    });
+
+    $(container).on('click','.up', function () {        //close the grid box
+            $(this).parent().remove();
+        });
+
+    $(container).on('click','.show', function () {     //On click of link, textbox will open
+          console.log(count[1])
+            msg_bubble = 1;
+            $("div.popup").show();
+            var num = $(this).attr('value');
+            console.log(num,'num')
+            $(textbox).append('<div class="myDiv'+ num +'" id = "main_box"><div id="name_box" contenteditable="true">Grid No_ '+ num +'</div><section class="contact-form"><form><div class="input-group"><input id="salutation-mr" name="salutation" type="radio" value="Mr."/><label class="inline" for="salutation-mr">Mr.</label><input id="salutation-mrs" name="salutation" type="radio" value="Mrs."/><label class="inline" for="salutation-mrs">Mrs.</label><input id="salutation-ms" name="salutation" type="radio" value="Ms."/><label class="inline" for="salutation-ms">Ms.</label></div><div class="input-group"><label for="name">Name</label><input id="name" name="name" type="text"/></div><div class="input-group"><label for="email">Email</label><input id="email" name="email" type="email"/></div><div class="input-group"><label for="subject">How can I help you?</label><select id="subject" name="subject"><option>I have a problem.</option><option>I have a general question.</option></select></div><input name="secret" type="hidden" value="1b3a9374-1a8e-434e-90ab-21aa7b9b80e7"/><button type="submit">Send It!</button></form></section><a class="success"><i class="fa fa-plus"></i>  Add Message Bubble</a><div class="user_selection"><form name="demoForm"><select name="demoSelect" class="dropdown"><option value="select" selected>Select Input</option><option value="A">Text Input</option><option value="B">Buttons</option><option value="C">Star Ratings</option><option value="D">Calendar & Time</option><option value="E">Image/File Input</option></select></form><p id = "selected">Select User Input: </p></div></div><div class="row_2" style="display:inline-block;"><div id="input" style="display: block;"><h4><i class="fa fa-pencil" style="padding-right: 5px;"></i>Name<h4 id="check"></h4></h4></div><!-- <h4 id="check"><i class="fa fa-pencil" style="padding-right: 5px;"></i></h4> --><hr><div id="txt_input" style="display: none;font-weight: bold;"><label for="fname">Type Input:</label><br><select name="input_file" id="select_optn"><option>File Upload</option><option>Take Photo</option><option>File Upload & Take Photo</option></select></div><div id="add_btn"><button class="user_button'+ num +'" id = "add_new_btn" contenteditable="true">Button</button><br><div class="extra_btn"></div><button class="user_add_button"><i class="fa fa-plus"></i>  Add Button</button></div><div id="star_rating" style="display: none;font-weight: bold;"><div id="star_number"><label for="fname">Number of stars:</label><br><select name="input_file" id="select_optn"><option>3</option><option>4</option><option>5</option></select></div><div id="star_steps"><label for="fname">Steps in stars:</label><br><select name="input_file" id="select_optn"><option>0.5</option><option>1</option></select></div></div><div id="txt_input_new" style="display: none;font-weight: bold;"><label for="fname">Type Input:</label><br><select name="input_file" id="select_optn"><option>Name</option><option>Full Name</option><option>Email</option><option>Mobile</option><option>Password</option><option>Custom Text</option></select></div><div id="calendar_time" style="display:none;"><div class="column"><h2 style="text-align: center;">Calendar</h2><label for="fname">Data Limitation Type</label><select name="input_file" id="select_optn_new"><option>Absolute Date</option><option>Relative Date</option></select><div id="two_col" style="margin-top: 10px;"><div id="min"><label for="fname">Min Date</label><br><input type="date" name="date"></div><div id="max"><label for="fname">Max Date</label><br><input type="date" name="date"></div></div></div><div class="column"><h2 style="text-align: center;">Time</h2><label for="fname">Appointment Duration</label><select name="input_file" id="select_optn_new"><option>15 minutes</option><option>30 minutes</option><option>1 hour</option><option>2 hour</option></select><div id="two_col" style="margin-top: 10px;"><div id="min"  style="float: left; margin-left: 10px;"><label for="fname">Start Time</label><br><select name="input_file" id="select_optn_new"><option>09:00 AM</option><option>10:00 AM</option><option>11:00 AM</option><option>12:00 AM</option></select></div><div id="max"  style="float:right; margin-right: 10px;"><label for="fname">End Time</label><br><select name="input_file" id="select_optn_new"><option>09:00 AM</option><option>10:00 AM</option><option>11:00 AM</option><option>12:00 AM</option></select></div></div></div></div></div><div class="row_3"><button class="cancel">Cancel</button><button class="save" value = "input_msg'+ num +'">Save</button></div></div>')
+
+              $("#input_msg"+num).text(window.localStorage.getItem(key+num))
+              console.log(count[num-1])
+              for(var i=2; i<= count[num-1];i++){
+              console.log("enter",i)
+              console.log(window.localStorage.getItem(num+i))
+              var structure = $('<div class="bubble"><div class="hide'+ msg_bubble +'" id="hide_btn"><i class="fa fa-close" id="close_btn"></i></div><div id = "add_msg_'+ num+i +'" class=" bubble-bottom-left" contenteditable>Type any text here</div></div>');
+              $(".container_inside").append(structure);
+              $("#add_msg_"+num+i).text(window.localStorage.getItem(num+i));
+            }
+        });
+
+    $(textbox).on('click','.cancel',function(){      //textbox will close
+        btn_count = 1;
+             $("#main_box").remove();
+           $("div.popup").hide();
+           console.log(container.attr('.box'),'267')
+        });
+
+
+    var container_box = document.createElement('div')
+    container_box.style.cssText = 'padding: 5px; margin: 20px, width: 220px, border: 1px dashed, overflow: hidden, borderTopColor: #999, borderBottomColor: #999, borderLeftColor: #999, borderRightColor: #999'
+
+    $(textbox).on('click','.success',function(){      //Msg bubble will append on click of add message bubble button
+        msg_bubble++;
+        var box_no = $("#main_box").attr('class').split("")[5];
+        console.log(msg_bubble)
+        var structure = $('<div class="bubble"><div class="hide'+ msg_bubble +'" id="hide_btn"><i class="fa fa-close" id="close_btn"></i></div><div id = "add_msg_'+ box_no+msg_bubble +'" class=" bubble-bottom-left" contenteditable>Type any text here</div></div>');
+        $(".container_inside").append(structure);
+        if($("#add_msg_"+box_no+msg_bubble).text()=="Type any text here"){
+                if(window.localStorage.getItem(box_no+msg_bubble)){
+                    $("#add_msg_"+box_no+msg_bubble).text(window.localStorage.getItem(box_no+msg_bubble));
+                }
+            }
+        console.log(window.localStorage.getItem(box_no+msg_bubble))
+        });
+
+      $(textbox).on('click','.user_add_button',function(){
+        btn_count++;
+        console.log(btn_count,"button count")
+          var box_no = $("#main_box").attr('class').split("")[5];
+          var btn_structure = $('<button class="user_button'+box_no+ btn_count +'" id = "add_new_btn" contenteditable="true">Button</button><br>')
+            $(".extra_btn").append(btn_structure);
+            if($(".user_button"+box_no+btn_count).text()=="Button"){
+                if(window.localStorage.getItem("newkey"+box_no+btn_count)){
+                  console.log(window.localStorage.getItem("newkey"+box_no+btn_count))
+                    $(".user_button"+box_no+btn_count).text(window.localStorage.getItem("newkey"+box_no+btn_count));
+                }
+            }
+        });
+
+      $('select').on('change', function() {
+        alert( this.value );
+      });
+
+       $(textbox).on('click','.save',function(){      //textbox will save
+            var val = $(this).attr('value')
+            var num = val.split("")[9]
+            var msg_new = $("#"+val).text();
+            var btn_val = $(".user_button"+val.split("")[9]).text();
+            console.log(btn_val,"button value")
+            var box_no = $("#main_box").attr('class').split("")[5];
+            window.localStorage.setItem(key+box_no,msg_new);
+            window.localStorage.setItem("btn_key"+box_no,btn_val)
+            console.log(window.localStorage.getItem("btn_key1"))
+            console.log(msg_bubble)
+            count.push(msg_bubble)
+            console.log(count)
+            if(msg_bubble>1){
+                for(var i=2; i<=msg_bubble; i++){
+                  console.log(box_no+i)
+                    window.localStorage.setItem(box_no+i,$("#add_msg_"+box_no+i).text())
+                    console.log(window.localStorage.getItem(box_no+i))
+                }
+             }
+             if(btn_count>1){
+              for(var i=2; i<= btn_count; i++){
+                window.localStorage.setItem("newkey"+box_no+i,$(".user_button"+box_no+i).text())
+                console.log(i,window.localStorage.getItem("newkey"+box_no+i),"after")
+              }
+             }
+            for(var  i =1; i<btn_count;i++){
+             //  console.log("append button"+i)
+             // $(obj).append('<button>New</button>')
+            }
+
+            console.log($("#main_box").attr('class'))
+        });
+
+       $(textbox).on('click','#hide_btn',function(){      //input message bubble will close
+             var num = $(this).attr('class').split("")
+             var box_no = $("#main_box").attr('class').split("")[5];
+            console.log(box_no+num[4])
+            alert(window.localStorage.getItem(box_no+num[4]))
+            window.localStorage.removeItem(box_no+num[4])
+            if(window.localStorage.getItem(box_no+num[4])){
+                alert("doesnot delete")
+            }
+            else{
+                alert(window.localStorage.getItem(num[4]))
+                alert("successfully deleted")
+            }
+            $(this).parent().remove();
+        });
+
+       $(textbox).on('click',".dropdown",function(){
+        var box_no = $("#main_box").attr('class').split("")[5];
+          $('select').on('change',function(){
+            if(this.value == "A"){      //textinput
+                $("#txt_input").hide();
+                $("#add_btn").hide();
+                $("#star_rating").hide();
+                $("#calendar_time").hide();
+                $("#txt_input_new").show();
+            }
+            else if (this.value == 'B'){      //buttons
+                $("#txt_input").hide();
+                $("#add_btn").show();
+                $("#star_rating").hide();
+                $("#calendar_time").hide();
+                $("#txt_input_new").hide();
+                btn_val = $(".user_button"+box_no).text();
+                if(btn_val == "Button"){
+                  if(window.localStorage.getItem("btn_key"+box_no)){
+                    $(".user_button"+box_no).text(window.localStorage.getItem("btn_key"+box_no))
+                    console.log(window.localStorage.getItem("btn_key"+box_no))
+                  }
+                }
+            }
+            else if (this.value == 'C'){      //star ratings
+                $("#txt_input").hide();
+                $("#add_btn").hide();
+                $("#star_rating").show();
+                $("#calendar_time").hide();
+                $("#txt_input_new").hide();
+            }
+            else if (this.value == 'D'){      //calendar & time
+                $("#txt_input").hide();
+                $("#add_btn").hide();
+                $("#star_rating").hide();
+                $("#calendar_time").show();
+                $("#txt_input_new").hide();
+            }
+            else if (this.value == 'E'){      //image/input field
+                $("#txt_input").show();
+                $("#add_btn").hide();
+                $("#star_rating").hide();
+                $("#calendar_time").hide();
+                $("#txt_input_new").hide();
+            }
+        });
+       });
+    });
+
+    let sidebar = document.querySelector(".sidebar");
+  let closeBtn = document.querySelector("#btn");
+  let searchBtn = document.querySelector(".bx-search");
+
+  closeBtn.addEventListener("click", ()=>{
+    sidebar.classList.toggle("open");
+    menuBtnChange();//calling the function(optional)
+  });
+
+  searchBtn.addEventListener("click", ()=>{ // Sidebar open when you click on the search iocn
+    sidebar.classList.toggle("open");
+    menuBtnChange(); //calling the function(optional)
+  });
+
+  // following are the code to change sidebar button(optional)
+  function menuBtnChange() {
+   if(sidebar.classList.contains("open")){
+     closeBtn.classList.replace("bx-menu", "bx-menu-alt-right");//replacing the iocns class
+   }else {
+     closeBtn.classList.replace("bx-menu-alt-right","bx-menu");//replacing the iocns class
+   }
+  }
+
+
+        function showData() {
+        var theSelect = demoForm.demoSelect;
+        if (theSelect[theSelect.selectedIndex].value == 'B'){       //Buttons
+            document.getElementById('add_btn').style.display = "block";
+            document.getElementById('txt_input').style.display = "none";
+            document.getElementById("star_rating").style.display = "none";
+            document.getElementById("txt_input_new").style.display = "none";
+            document.getElementById('calendar_time').style.display = "none";
+            console.log
+
+        }
+        else if (theSelect[theSelect.selectedIndex].value == "E"){      //Image/file Input
+            document.getElementById('add_btn').style.display = "none";
+            document.getElementById('txt_input').style.display = "block";
+            document.getElementById("star_rating").style.display = "none";
+            document.getElementById("txt_input_new").style.display = "none";
+            document.getElementById('calendar_time').style.display = "none";
+        }
+        else if (theSelect[theSelect.selectedIndex].value == "C"){      //star ratings
+            document.getElementById("star_rating").style.display = "block";
+            document.getElementById('add_btn').style.display = "none";
+            document.getElementById('txt_input').style.display = "none";
+            document.getElementById("txt_input_new").style.display = "none";
+            document.getElementById('calendar_time').style.display = "none";
+        }
+        else if (theSelect[theSelect.selectedIndex].value == "A"){        //Text Input
+            document.getElementById("txt_input_new").style.display = "block";
+            document.getElementById("star_rating").style.display = "none";
+            document.getElementById('add_btn').style.display = "none";
+            document.getElementById('txt_input').style.display = "none";
+            document.getElementById('calendar_time').style.display = "none";
+        }
+        else if (theSelect[theSelect.selectedIndex].value == "D"){        //Calendar & Time
+            document.getElementById('calendar_time').style.display = "block";
+            document.getElementById("txt_input_new").style.display = "none";
+            document.getElementById("star_rating").style.display = "none";
+            document.getElementById('add_btn').style.display = "none";
+            document.getElementById('txt_input').style.display = "none";
+        }
+        else if (theSelect[theSelect.selectedIndex].value == "select"){
+            document.getElementById('add_btn').style.display = "none";
+            document.getElementById('txt_input').style.display = "none";
+            document.getElementById("star_rating").style.display = "none";
+            document.getElementById("txt_input_new").style.display = "none";
+            document.getElementById('calendar_time').style.display = "none";
+        }
+    }
+    </script>
+</body>
+</html>
